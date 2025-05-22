@@ -3,10 +3,10 @@ import { OpenAPIHono } from "@hono/zod-openapi"
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-function getLandingPageHtml() {
-    const templatePath = join(__dirname, '..', 'templates', 'landing.html')
-    return readFileSync(templatePath, 'utf-8')
-}
+// function getLandingPageHtml() {
+//     const templatePath = join(__dirname, '..', 'templates', 'landing.html')
+//     return readFileSync(templatePath, 'utf-8')
+// }
 
 function configureApiDocs(app: OpenAPIHono) {
     // The OpenAPI documentation will be available at /doc
@@ -23,7 +23,7 @@ function configureApiDocs(app: OpenAPIHono) {
     app.get('/api/ui', swaggerUI({ url: '/api/doc' }))
 
     // Root page with links to documentation
-    app.get('/', (c) => c.html(getLandingPageHtml()))
+    // app.get('/', (c) => c.html(getLandingPageHtml()))
 }
 
 export default configureApiDocs

@@ -15,6 +15,36 @@ The codebase follows a modular design pattern:
 - **src/utils/**: Shared utility functions
 - **src/schemas/**: Shared Zod schemas
 
+## Environment Variables
+
+Required:
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `DEFAULT_ACCESS_TOKEN`: Access token for API authentication
+
+Optional:
+- `PORT`: Port to run the server on (default: 3000)
+- `NODE_ENV`: Environment mode (default: production)
+
+## Docker Usage
+
+Build the image:
+```bash
+docker build -t ai-backend .
+```
+
+Run with environment variables:
+```bash
+docker run -p 3000:3000 \
+  -e OPENAI_API_KEY=your_key \
+  -e DEFAULT_ACCESS_TOKEN=your_token \
+  ai-backend
+```
+
+Or using an env file:
+```bash
+docker run -p 3000:3000 --env-file .env ai-backend
+```
+
 ## Available Endpoints
 
 - **/summarize**: Summarize text
