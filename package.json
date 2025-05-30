@@ -3,7 +3,9 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "start": "bun dist/index.js",
-    "build": "bun build src/index.ts --outfile=dist/index.js"
+    "build": "bun build src/index.ts --outfile=dist/index.js",
+    "docs:redoc": "redoc-cli build http://localhost:3000/api/doc --output docs/redoc.html",
+    "docs:redoc-serve": "redoc-cli serve http://localhost:3000/api/doc"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",
@@ -15,6 +17,7 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "redoc-cli": "^0.13.21"
   }
 }
