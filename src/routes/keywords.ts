@@ -16,7 +16,8 @@ const responseSchema = z.object({
  */
 async function handleKeywordsRequest(c: Context) {
   try {
-    const body = await c.req.valid('json', keywordsRequestSchema)
+    const raw = await c.req.json()
+    const body = keywordsRequestSchema.parse(raw)
 
     const prompt = keywordsPrompt(body.text, body.maxKeywords)
 
@@ -59,7 +60,7 @@ router.openapi(
       }
     }
   }), 
-  handleKeywordsRequest
+  handleKeywordsRequest as any
 )  
 
 export default {

@@ -17,8 +17,8 @@ const responseSchema = z.object({
  */
 async function handleSummarizeRequest(c: Context) {
   try {
-    const body = await c.req.valid('json', summarizeRequestSchema)
-
+    const raw = await c.req.json()
+    const body = summarizeRequestSchema.parse(raw)
     const prompt = summarizePrompt(body.text, body.maxLength)
 
     // Get response using our service
@@ -60,7 +60,7 @@ router.openapi(
       }
     }
   }), 
-  handleSummarizeRequest
+  handleSummarizeRequest as any
 )  
 
 export default {

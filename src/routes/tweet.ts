@@ -11,7 +11,8 @@ const router = new OpenAPIHono()
  */
 async function handleTweetRequest(c: Context) {
   try {
-    const body = await c.req.valid('json', tweetRequestSchema)
+    const raw = await c.req.json()
+    const body = tweetRequestSchema.parse(raw)
 
     // Generate the tweet using our service
     const { tweet, characterCount, author, usage } = await generateTweet(body.topic)
@@ -52,7 +53,7 @@ router.openapi(
     },
     tags: ['Tweet'], // Group in Swagger UI
   }), 
-  handleTweetRequest
+  handleTweetRequest as any
 )  
 
 export default {
