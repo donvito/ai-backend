@@ -2,6 +2,8 @@ import { OpenAPIHono } from "@hono/zod-openapi"
 import * as fs from 'fs'
 import * as path from 'path'
 
+const isDev = process.env.NODE_ENV === 'development'
+
 async function loadRoutes() {
     const routesDir = path.join(__dirname, '../routes')
     const routeFiles = fs.readdirSync(routesDir)
@@ -25,12 +27,10 @@ async function loadRoutes() {
             ) {
                 routes.push({ handler, mountPath })
             } else {
-                console.warn(
-                  `[WARN] Route file '${file}' (resolved handler type: ${typeof handler}) does not export a valid Hono router instance. Expected an object with an array 'routes' property and fetch/route methods. Skipping.`
-                )
-                // For debugging, log what the handler actually is if it's not valid
-                if (handler && typeof handler === 'object') {
-                    console.warn(`[DEBUG] Problematic handler for ${file} has keys: ${Object.keys(handler).join(', ')}. Is routes an array? ${Array.isArray((handler as any).routes)}`);
+                if (isDev) {
+                    console.warn(
+                      `[WARN] Route file '${file}' (resolved handler type: ${typeof handler}) does not export a valid Hono router instance. Skipping.`
+                    )
                 }
             }
         }

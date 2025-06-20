@@ -2,7 +2,6 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { bearerAuth } from 'hono/bearer-auth'
 import { secureHeaders } from 'hono/secure-headers'
 import { cors } from 'hono/cors'
-// @ts-ignore
 import { Context } from 'hono'
 
 function initialise(): OpenAPIHono {
