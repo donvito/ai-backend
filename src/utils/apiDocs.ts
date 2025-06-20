@@ -2,6 +2,7 @@ import { swaggerUI } from "@hono/swagger-ui"
 import { OpenAPIHono } from "@hono/zod-openapi"
 import { readFileSync } from 'fs'
 import { join } from 'path'
+/// <reference types="node" />
 
 function getLandingPageHtml() {
     const templatePath = join(process.cwd(), 'src', 'templates', 'landing.html')
@@ -26,14 +27,13 @@ function configureApiDocs(app: OpenAPIHono) {
                 url: 'https://github.com/donvito/ai-backend'
             }
         },
+        // @ts-ignore – process typings provided by Bun during runtime
         servers: [
             {
-                url: 'http://localhost:3000',
-                description: 'Development server'
-            },
-            {
-                url: 'https://your-production-domain.com',
-                description: 'Production server'
+                //@ts-ignore
+                url: process.env.BASE_URL || 'http://localhost:3000',
+                //@ts-ignore
+                description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
             }
         ]
     })

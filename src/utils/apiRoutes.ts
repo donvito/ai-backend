@@ -8,7 +8,8 @@ async function loadRoutes() {
     
     const routes = []
     for (const file of routeFiles) {
-        if (file.endsWith('.ts') && !file.endsWith('.test.ts')) {
+        if ((file.endsWith('.ts') || file.endsWith('.js')) &&
+            !(file.endsWith('.test.ts') || file.endsWith('.test.js'))) {
             const routePath = path.join(routesDir, file)
             const routeModule = await import(routePath)
             const moduleExport = routeModule.default

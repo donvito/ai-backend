@@ -16,9 +16,9 @@ export const summarizeRequestSchema = z.object({
 export const summarizeResponseSchema = z.object({
   summary: z.string(),
   usage: z.object({
-    promptTokens: z.number(),
-    completionTokens: z.number(),
-    totalTokens: z.number(),
+    input_tokens: z.number(),
+    output_tokens: z.number(),
+    total_tokens: z.number(),
   }),
 })
 

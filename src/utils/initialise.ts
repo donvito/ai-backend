@@ -5,18 +5,12 @@ import { cors } from 'hono/cors'
 
 function initialise(): OpenAPIHono {
 
-    const openaApiHono = new OpenAPIHono()
+    const openApiHono = new OpenAPIHono()
 
-    let token: string | undefined = undefined;
-    try {
-        token = configureToken();
-    } catch (error) {
-        console.error('DEFAULT_ACCESS_TOKEN is not set')
-        process.exit(1);
-    }
+    const token = configureToken();
 
     // Add CORS middleware
-    openaApiHono.use('/*', cors({
+    openApiHono.use('/*', cors({
         origin: (origin) => {
             // Allow requests from webcontainer-api.io domains
             if (origin && origin.match(/.*\.local-credentialless\.webcontainer-api\.io$/)) {
@@ -31,21 +25,29 @@ function initialise(): OpenAPIHono {
         credentials: true,
     }))
 
-    configureApiSecurity(openaApiHono, token);
+    configureApiSecurity(openApiHono, token);
 
-    return openaApiHono
+    return openApiHono
 }
 
 function configureToken(): string {
-    const token: string | undefined = process.env.DEFAULT_ACCESS_TOKEN;
-    if (!token) {
-        throw new Error('DEFAULT_ACCESS_TOKEN is not set')
+    // @ts-ignore – process typings provided by runtime
+    const envToken: string | undefined = process.env.DEFAULT_ACCESS_TOKEN;
+    if (!envToken && process.env.NODE_ENV === 'development') {
+        // Provide a predictable token in dev to avoid startup failures
+        console.warn('[WARN] DEFAULT_ACCESS_TOKEN not set – using fallback dev token');
+        return 'dev-token';
     }
-    return token;
+    // @ts-ignore – process typings provided by runtime
+    if (!envToken) {
+        throw new Error('DEFAULT_ACCESS_TOKEN is not set');
+    }
+    return envToken;
 }
 
 function configureApiSecurity(app: OpenAPIHono, token: string) {
 
+    // @ts-ignore – process typings provided by runtime
     const devMode = process.env.NODE_ENV === 'development'
     console.log('process.env.NODE_ENV', process.env.NODE_ENV)
     console.log('devMode', devMode)
@@ -53,7 +55,7 @@ function configureApiSecurity(app: OpenAPIHono, token: string) {
     if (!devMode) {
         app.use(secureHeaders())
 
-        app.use('/*', async (c, next) => {
+        app.use('/*', async (c: any, next: any) => {
             const path = c.req.path;
             // Allow public access to /doc, /ui, and /redoc
             if (path === '/' || path === '/api/doc' || path === '/api/ui' || path === '/api/redoc' || path === '/api/hello') {
