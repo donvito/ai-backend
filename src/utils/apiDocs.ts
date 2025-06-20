@@ -2,6 +2,7 @@ import { swaggerUI } from "@hono/swagger-ui"
 import { OpenAPIHono } from "@hono/zod-openapi"
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import { Context } from 'hono'
 /// <reference types="node" />
 
 function getLandingPageHtml() {
@@ -39,10 +40,10 @@ function configureApiDocs(app: OpenAPIHono) {
     app.get('/api/ui', swaggerUI({ url: '/api/doc' }))
 
     // The ReDoc UI will be available at /redoc
-    app.get('/api/redoc', (c) => c.html(getRedocHtml()))
+    app.get('/api/redoc', (c: Context) => c.html(getRedocHtml()))
 
     // Root page with links to documentation
-    app.get('/', (c) => c.html(getLandingPageHtml()))
+    app.get('/', (c: Context) => c.html(getLandingPageHtml()))
 }
 
 export default configureApiDocs

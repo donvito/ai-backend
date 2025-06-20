@@ -12,7 +12,7 @@ function initialise(): OpenAPIHono {
 
     // Add CORS middleware
     openApiHono.use('/*', cors({
-        origin: (origin) => {
+        origin: (origin: string | undefined) => {
             // Allow requests from webcontainer-api.io domains
             if (origin && origin.match(/.*\.local-credentialless\.webcontainer-api\.io$/)) {
                 return origin;
