@@ -27,12 +27,9 @@ function configureApiDocs(app: OpenAPIHono) {
                 url: 'https://github.com/donvito/ai-backend'
             }
         },
-        // @ts-ignore – process typings provided by Bun during runtime
         servers: [
             {
-                //@ts-ignore
                 url: process.env.BASE_URL || 'http://localhost:3000',
-                //@ts-ignore
                 description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
             }
         ]

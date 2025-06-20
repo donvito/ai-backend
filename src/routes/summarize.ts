@@ -2,7 +2,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { Context } from 'hono'
 import { generateResponse } from '../services/openai'
 import { summarizePrompt } from '../utils/prompts'
-import { handleError, handleValidationError } from '../utils/errorHandler'
+import { handleError } from '../utils/errorHandler'
 import { summarizeRequestSchema } from '../schemas/summarize'
 
 const router = new OpenAPIHono()
@@ -17,14 +17,9 @@ const responseSchema = z.object({
  */
 async function handleSummarizeRequest(c: Context) {
   try {
-    const { text, maxLength } = await c.req.json()
+    const body = await c.req.valid('json', summarizeRequestSchema)
 
-    if (!text) {
-      return handleValidationError(c, 'Text')
-    }
-
-    // Generate the prompt
-    const prompt = summarizePrompt(text, maxLength)
+    const prompt = summarizePrompt(body.text, body.maxLength)
 
     // Get response using our service
     const { data, usage } = await generateResponse(
@@ -65,7 +60,7 @@ router.openapi(
       }
     }
   }), 
-  handleSummarizeRequest as any
+  handleSummarizeRequest
 )  
 
 export default {

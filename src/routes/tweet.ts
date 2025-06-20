@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { Context } from 'hono'
 import { generateTweet } from '../services/openai'
-import { handleError, handleValidationError } from '../utils/errorHandler'
+import { handleError } from '../utils/errorHandler'
 import { tweetRequestSchema, tweetResponseSchema } from '../schemas/tweet'
 
 const router = new OpenAPIHono()
@@ -11,14 +11,10 @@ const router = new OpenAPIHono()
  */
 async function handleTweetRequest(c: Context) {
   try {
-    const { topic } = await c.req.json()
-
-    if (!topic) {
-      return handleValidationError(c, 'Topic')
-    }
+    const body = await c.req.valid('json', tweetRequestSchema)
 
     // Generate the tweet using our service
-    const { tweet, characterCount, author, usage } = await generateTweet(topic)
+    const { tweet, characterCount, author, usage } = await generateTweet(body.topic)
 
     return c.json({ 
       tweet,
@@ -56,7 +52,7 @@ router.openapi(
     },
     tags: ['Tweet'], // Group in Swagger UI
   }), 
-  handleTweetRequest as any
+  handleTweetRequest
 )  
 
 export default {

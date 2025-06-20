@@ -2,6 +2,8 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { bearerAuth } from 'hono/bearer-auth'
 import { secureHeaders } from 'hono/secure-headers'
 import { cors } from 'hono/cors'
+// @ts-ignore
+import { Context } from 'hono'
 
 function initialise(): OpenAPIHono {
 
@@ -31,14 +33,12 @@ function initialise(): OpenAPIHono {
 }
 
 function configureToken(): string {
-    // @ts-ignore – process typings provided by runtime
     const envToken: string | undefined = process.env.DEFAULT_ACCESS_TOKEN;
     if (!envToken && process.env.NODE_ENV === 'development') {
         // Provide a predictable token in dev to avoid startup failures
         console.warn('[WARN] DEFAULT_ACCESS_TOKEN not set – using fallback dev token');
         return 'dev-token';
     }
-    // @ts-ignore – process typings provided by runtime
     if (!envToken) {
         throw new Error('DEFAULT_ACCESS_TOKEN is not set');
     }
@@ -47,15 +47,12 @@ function configureToken(): string {
 
 function configureApiSecurity(app: OpenAPIHono, token: string) {
 
-    // @ts-ignore – process typings provided by runtime
     const devMode = process.env.NODE_ENV === 'development'
-    console.log('process.env.NODE_ENV', process.env.NODE_ENV)
-    console.log('devMode', devMode)
 
     if (!devMode) {
         app.use(secureHeaders())
 
-        app.use('/*', async (c: any, next: any) => {
+        app.use('/*', async (c: Context, next: () => Promise<void>) => {
             const path = c.req.path;
             // Allow public access to /doc, /ui, and /redoc
             if (path === '/' || path === '/api/doc' || path === '/api/ui' || path === '/api/redoc' || path === '/api/hello') {

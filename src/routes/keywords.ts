@@ -2,7 +2,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { Context } from 'hono'
 import { generateResponse } from '../services/openai'
 import { keywordsPrompt } from '../utils/prompts'
-import { handleError, handleValidationError } from '../utils/errorHandler'
+import { handleError } from '../utils/errorHandler'
 import { keywordsRequestSchema } from '../schemas/keywords'
 
 const router = new OpenAPIHono()
@@ -16,14 +16,9 @@ const responseSchema = z.object({
  */
 async function handleKeywordsRequest(c: Context) {
   try {
-    const { text, maxKeywords } = await c.req.json()
+    const body = await c.req.valid('json', keywordsRequestSchema)
 
-    if (!text) {
-      return handleValidationError(c, 'Text')
-    }
-
-    // Generate the prompt
-    const prompt = keywordsPrompt(text, maxKeywords)
+    const prompt = keywordsPrompt(body.text, body.maxKeywords)
 
     // Get response using our service
     const { data, usage } = await generateResponse(
@@ -64,7 +59,7 @@ router.openapi(
       }
     }
   }), 
-  handleKeywordsRequest as any
+  handleKeywordsRequest
 )  
 
 export default {

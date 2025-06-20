@@ -18,6 +18,8 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "bun-types": "^1.2.12",
+    "@types/node": "^20.10.0",
     "redoc-cli": "^0.13.21"
   }
 }
