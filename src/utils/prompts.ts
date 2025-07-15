@@ -77,3 +77,37 @@ Example response format:
 
 Text to analyze: ${text}`;
 }
+
+/**
+ * System prompt for code generation
+ */
+export function generateCodePrompt(
+  prompt: string, 
+  language?: string, 
+  framework?: string, 
+  complexity?: string,
+  includeComments?: boolean
+): string {
+  let systemPrompt = `Generate code based on the following requirements: ${prompt}
+
+Please provide:
+1. Clean, working code that follows best practices
+2. The programming language used
+3. A brief explanation of what the code does
+
+Requirements:
+- ${complexity || 'intermediate'} complexity level
+- ${includeComments ? 'Include helpful comments' : 'Minimal comments'}`;
+
+  if (language) {
+    systemPrompt += `\n- Use ${language} programming language`;
+  }
+
+  if (framework) {
+    systemPrompt += `\n- Use ${framework} framework/library`;
+  }
+
+  systemPrompt += `\n\nEnsure the code is production-ready and follows coding standards.`;
+
+  return systemPrompt;
+}
