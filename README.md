@@ -20,6 +20,7 @@ The codebase follows a modular design pattern:
 
 ## Available Endpoints
 
+- **/translate**: Translate text using OpenAI or DeepL - [Documentation](docs/translation-api.md)
 - **/summarize**: Summarize text
 
 ## Current Models Supported
