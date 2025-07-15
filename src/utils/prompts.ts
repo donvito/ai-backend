@@ -77,3 +77,42 @@ Example response format:
 
 Text to analyze: ${text}`;
 }
+
+/**
+ * System prompt for image captioning
+ */
+export function imageCaptionPrompt(style?: string, maxLength?: number, includeDetails?: boolean): string {
+  let prompt = 'Analyze this image and provide a natural language caption that describes what you see.';
+  
+  // Add style guidance
+  if (style) {
+    switch (style) {
+      case 'descriptive':
+        prompt += ' Focus on providing detailed visual descriptions of all elements in the image.';
+        break;
+      case 'concise':
+        prompt += ' Keep the description brief and to the point, highlighting only the most important elements.';
+        break;
+      case 'creative':
+        prompt += ' Use creative and engaging language to describe the scene, as if telling a story.';
+        break;
+      case 'technical':
+        prompt += ' Focus on technical aspects like composition, lighting, camera angles, and photographic elements.';
+        break;
+    }
+  }
+  
+  // Add length constraint
+  if (maxLength) {
+    prompt += ` Limit your response to ${maxLength} words or less.`;
+  }
+  
+  // Add detail level
+  if (includeDetails) {
+    prompt += ' Include specific details about colors, textures, spatial relationships, and any text visible in the image.';
+  }
+  
+  prompt += ' Provide only the caption without any additional commentary or explanation.';
+  
+  return prompt;
+}

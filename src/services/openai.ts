@@ -155,4 +155,68 @@ export async function generateTweet(topic: string): Promise<{
   };
 }
 
+/**
+ * Generate a caption for an image using OpenAI's vision model
+ */
+export async function generateImageCaption(
+  imageData: string,
+  prompt: string
+): Promise<{
+  caption: string;
+  usage?: TokenUsage;
+}> {
+  // Determine if it's a URL or base64 data
+  const isUrl = imageData.startsWith('http://') || imageData.startsWith('https://');
+  const isBase64 = imageData.startsWith('data:image/');
+  
+  if (!isUrl && !isBase64) {
+    throw new Error('Image must be either a URL or base64 encoded data with proper data:image/ prefix');
+  }
+
+  const imageContent = isUrl 
+    ? { type: "image_url" as const, image_url: { url: imageData } }
+    : { type: "image_url" as const, image_url: { url: imageData } };
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o", // Use vision-capable model
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: prompt
+          },
+          imageContent
+        ]
+      }
+    ],
+    max_tokens: 500,
+    temperature: 0.7
+  });
+
+  const caption = response.choices[0]?.message?.content || '';
+  
+  // Convert usage data to our expected format
+  let usage: TokenUsage | undefined;
+  if (response.usage) {
+    usage = {
+      input_tokens: response.usage.prompt_tokens || 0,
+      input_tokens_details: {
+        cached_tokens: 0
+      },
+      output_tokens: response.usage.completion_tokens || 0,
+      output_tokens_details: {
+        reasoning_tokens: 0
+      },
+      total_tokens: response.usage.total_tokens || 0
+    };
+  }
+
+  return {
+    caption: caption.trim(),
+    usage
+  };
+}
+
 export { openai, OPENAI_MODEL } 

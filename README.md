@@ -20,7 +20,12 @@ The codebase follows a modular design pattern:
 
 ## Available Endpoints
 
-- **/summarize**: Summarize text
+- **/summarize**: Summarize long text using AI
+- **/translate**: Translate text between languages  
+- **/keywords**: Extract keywords from text
+- **/sentiment**: Analyze sentiment of text
+- **/tweet**: Generate tweets about topics
+- **/caption-image**: Generate natural language captions for images using Vision AI
 
 ## Current Models Supported
 
