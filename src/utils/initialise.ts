@@ -17,7 +17,7 @@ function initialise(): OpenAPIHono {
 
     // Add CORS middleware
     openaApiHono.use('/*', cors({
-        origin: buildOriginEvaluator(),
+        origin: configureCORS(),
         allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
         exposeHeaders: ['Content-Length', 'X-Request-Id'],
@@ -40,7 +40,7 @@ function configureToken(): string {
 
 // --- CORS Helpers ---
 
-function buildOriginEvaluator(): (origin: string | null) => string | null {
+function configureCORS(): (origin: string | null) => string | null {
     const raw = (process.env.CORS_ORIGINS || process.env.ALLOWED_ORIGINS || '').trim();
 
     const patterns = raw.length > 0
