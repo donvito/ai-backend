@@ -41,71 +41,25 @@ function configureToken(): string {
 // --- CORS Helpers ---
 
 function buildOriginEvaluator(): (origin: string | null) => string | null {
-    const envOrigins = process.env.CORS_ORIGINS || process.env.ALLOWED_ORIGINS;
+    const raw = (process.env.CORS_ORIGINS || process.env.ALLOWED_ORIGINS || '').trim();
 
-    // If no env configured, default to allowing localhost variants
-    const defaultAllowed = [
-        'http://localhost*',
-        'http://127.0.0.1*',
-        'https://localhost*',
-        'https://127.0.0.1*',
-    ];
+    const patterns = raw.length > 0
+        ? raw.split(',').map((s) => s.trim()).filter(Boolean)
+        : ['http://localhost*', 'http://127.0.0.1*', 'https://localhost*', 'https://127.0.0.1*'];
 
-    const patterns = parseAllowedOrigins(envOrigins, defaultAllowed);
+    const allowAll = patterns.includes('*');
 
-    const hasAllowAll = patterns.some((p) => p.type === 'wildcard_all');
+    const regexes = patterns
+        .filter((p) => p !== '*')
+        .map((p) => new RegExp('^' + p
+            .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+            .replace(/\*/g, '.*') + '$'));
 
     return (origin: string | null): string | null => {
         if (!origin) return null;
-
-        // If '*' present, echo the caller origin to be compatible with credentials=true
-        if (hasAllowAll) return origin;
-
-        for (const p of patterns) {
-            if (p.type === 'exact' && origin === p.value) return origin;
-            if (p.type === 'wildcard' && p.regex!.test(origin)) return origin;
-        }
-        return null;
+        if (allowAll) return origin;
+        return regexes.some((re) => re.test(origin)) ? origin : null;
     };
-}
-
-type OriginPattern =
-    | { type: 'exact'; value: string }
-    | { type: 'wildcard'; value: string; regex: RegExp }
-    | { type: 'wildcard_all' };
-
-function parseAllowedOrigins(envOrigins: string | undefined, fallback: string[]): OriginPattern[] {
-    const rawList = (envOrigins && envOrigins.trim().length > 0)
-        ? envOrigins
-        : fallback.join(',');
-
-    const items = rawList
-        .split(',')
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
-
-    const patterns: OriginPattern[] = [];
-    for (const item of items) {
-        if (item === '*') {
-            patterns.push({ type: 'wildcard_all' });
-            continue;
-        }
-        if (item.includes('*')) {
-            const regex = wildcardToRegex(item);
-            patterns.push({ type: 'wildcard', value: item, regex });
-        } else {
-            patterns.push({ type: 'exact', value: item });
-        }
-    }
-    return patterns;
-}
-
-function wildcardToRegex(pattern: string): RegExp {
-    // Escape regex special chars, then replace wildcard '*' with '.*'
-    const escaped = pattern
-        .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
-        .replace(/\*/g, '.*');
-    return new RegExp('^' + escaped + '$');
 }
 
 function configureApiSecurity(app: OpenAPIHono, token: string) {
