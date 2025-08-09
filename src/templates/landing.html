@@ -130,7 +130,10 @@
                     <h3 class="text-lg font-semibold text-blue-900 mb-3">🔧 Environment Setup</h3>
                     <p class="text-blue-800 mb-3">Create a <code class="px-2 py-1 bg-blue-100 rounded text-sm">.env</code> file in the root directory with your API configuration:</p>
                     <div class="bg-blue-100 rounded-lg p-4 text-sm font-mono text-blue-900">
-                        <div># OpenAI Configuration</div>
+                        <div># CORS Configuration</div>
+                        <div># Supports commas and wildcards like https://*.example.com. Defaults to localhost if unset.</div>
+                        <div>CORS_ORIGINS=https://*.example.com,https://app.example.com,http://localhost:3000</div>
+                        <div class="mt-2"># OpenAI Configuration</div>
                         <div>OPENAI_API_KEY=your-openai-api-key</div>
                         <div>OPENAI_MODEL=gpt-4</div>
                         <div class="mt-2"># Ollama Configuration (optional)</div>

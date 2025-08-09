@@ -44,6 +44,13 @@ Create a `.env` file in the root directory of this project and configure your pr
 # General Configuration
 DEFAULT_ACCESS_TOKEN=your-secret-api-key
 
+# CORS Configuration
+# Comma-separated list of allowed origins. Supports `*` and wildcard segments like `https://*.example.com`.
+# If unset, localhost (http/https, any port) is allowed by default.
+CORS_ORIGINS=https://*.example.com,https://app.example.com,http://localhost:3000
+# Alternatively, you can use ALLOWED_ORIGINS (legacy alias):
+# ALLOWED_ORIGINS=https://*.example.com,https://app.example.com
+
 # OpenAI Configuration
 OPENAI_API_KEY=your-openai-api-key
 
