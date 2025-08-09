@@ -17,19 +17,7 @@ function initialise(): OpenAPIHono {
 
     // Add CORS middleware
     openaApiHono.use('/*', cors({
-        origin: (origin) => {
-            // Allow requests from localhost
-            // Add your domain name here when you deploy so that you can access the API from your domain
-            if (
-                (origin && origin.startsWith('http://localhost')) ||
-                (origin && origin.startsWith('http://127.0.0.1')) ||
-                (origin && origin.startsWith('https://localhost')) ||
-                (origin && origin.startsWith('https://127.0.0.1'))
-            ) {
-                return origin;
-            }
-            return null;
-        },
+        origin: configureCors(),
         allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
         exposeHeaders: ['Content-Length', 'X-Request-Id'],
@@ -40,6 +28,40 @@ function initialise(): OpenAPIHono {
     configureApiSecurity(openaApiHono, token);
 
     return openaApiHono
+}
+
+function configureCors() {
+    const envOrigins = process.env.CORS_ALLOWED_ORIGINS
+    const defaultOrigins = [
+        'http://localhost',
+        'http://127.0.0.1',
+        'https://localhost',
+        'https://127.0.0.1',
+    ]
+
+    const allowedOrigins = envOrigins
+        ? envOrigins.split(',').map((o) => o.trim()).filter((o) => o.length > 0)
+        : defaultOrigins
+
+    return (origin: string | undefined): string | null => {
+        if (!origin) {
+            return null
+        }
+
+        for (const o of allowedOrigins) {
+            if (o === '*') {
+                return origin
+            }
+
+            const escaped = o.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')
+            const regex = new RegExp('^' + escaped + '$')
+            if (regex.test(origin)) {
+                return origin
+            }
+        }
+
+        return null
+    }
 }
 
 function configureToken(): string {

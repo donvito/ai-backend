@@ -44,6 +44,9 @@ Create a `.env` file in the root directory of this project and configure your pr
 # General Configuration
 DEFAULT_ACCESS_TOKEN=your-secret-api-key
 
+# CORS Configuration
+CORS_ALLOWED_ORIGINS=http://localhost:3000,https://example.com,https://*.example.com
+
 # OpenAI Configuration
 OPENAI_API_KEY=your-openai-api-key
 
